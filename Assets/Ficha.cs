@@ -5,16 +5,14 @@ using UnityEngine.UI;
 
 public class Ficha : MonoBehaviour {
 
-
+    //Pos actual en el puzzle
     public Vector2 pos;
 
+    //Pos final que deberá tener
     public Vector2 finalPos;
 
     [SerializeField]
     protected bool canMove;
-
-    //[SerializeField]
-    //public Vector3 canvasPos;
 
     protected bool isLocated;
 
@@ -27,9 +25,9 @@ public class Ficha : MonoBehaviour {
     public Puzzle puzzleInfo;
 
 
-    
+
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         //canvasPos = GetComponent<RectTransform>().rect.center;
         //pff solo canvas Debug.Log(GetComponent<RectTransform>().anchoredPosition3D + ";;;" + GetComponent<RectTransform>().anchoredPosition);
@@ -38,21 +36,10 @@ public class Ficha : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
-        // Debug.Log(GetComponent<RectTransform>().anchoredPosition3D + ";;;" + GetComponent<RectTransform>().anchoredPosition);
 
-        //if (isTap)
-        //{
-        //    MoveToSpace(f);
-        //}
     }
-
-    //private Vector2 GetPosition()
-    //{
-    //    return canvasPos;
-
-    //}
 
     public bool IsEmptySpace()
     {
@@ -120,35 +107,44 @@ public class Ficha : MonoBehaviour {
             pos = spacePos;
 
             //y lo mismo con XYZ location
-                Vector3 empty3DLocation = espacio.transform.position;
-                Vector3 my3DLocation = transform.position;
+            Vector3 empty3DLocation = espacio.transform.position;
+            Vector3 my3DLocation = transform.position;
 
-                transform.position = empty3DLocation; //yeahh
-            //no cambia!! Ni en 3D
-            espacio.transform.position = my3DLocation;
-           
+            //Animate
+            StartCoroutine("SwapPositions", empty3DLocation);
 
-            //Puzzle.CheckMovables, CheckIfPuzzleDone
 
-            Debug.Log("Movido el "+ GetComponentInChildren<TextMesh>().text +" al espacio "+ my3DLocation);
+            espacio.transform.position = my3DLocation; //no cambiaba!! R: por ser parte de un prefab instanceado
+
+            puzzleInfo.CheckWonAfterMove();
         }
 
     }
-
-
-    public void ChangePos(Vector3 p)
-    {
-        //   transform.GetComponent<RectTransform>().anchoredPosition.Set(p.x, p.y);
-        transform.position = p;
-    }
-
 
     public void SetTap()
     {
         isTap = true;
     }
 
-    //public void Move2D(Ficha espacio)
+    public bool CheckLocated()
+    {
+        if (pos == finalPos)
+        {
+            isLocated = true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void SetLocated(bool b)
+    {
+        isLocated = b;
+    }
+
+    //public void MoveButton(Ficha espacio)
     //{
     //    Vector2 spacePos = espacio.pos;
     //    espacio.pos = pos;
@@ -167,7 +163,53 @@ public class Ficha : MonoBehaviour {
     //    Debug.Log("Movido el " + GetComponentInChildren<Text>().text + " al espacio " + my3DLocation);
     //}
 
+    public Transform SetEmptyPos()
+    {
+        return puzzleInfo.GetEmptyFicha().transform;
+    }
 
+    //My first Coroutine
+    IEnumerator SwapPositions(Vector3 emptyPos)
+    {
+
+        float lerp = 0;
+        float duration = 0.1f;
+
+        Vector3 myPos = transform.position;
+
+        while (emptyPos != transform.position)
+        {
+            lerp += Time.deltaTime / duration;
+            transform.position = Vector3.Lerp(myPos, emptyPos /* espacio.transform.position*/, lerp);
+            yield return null;
+        }
+
+        //yield return new WaitForSeconds(0.15f);
+        Debug.Log("Sí acabo el while :P");
+        
+    }
+
+
+    //No Coroutine, no se anima
+    void MoveAnimate(Vector3 emptyPos)
+    {
+
+        float lerp = 0;
+        float duration = 1f;
+
+        Vector3 myPos = transform.position;
+        bool located = false;
+
+        while (!located)
+        {
+            lerp += Time.deltaTime / duration;
+            transform.position = Vector3.Lerp(myPos, emptyPos /* espacio.transform.position*/, lerp);
+
+            located = emptyPos == transform.position ? true : false;
+
+            // yield return null;
+        }
+    }
 
 
 }
