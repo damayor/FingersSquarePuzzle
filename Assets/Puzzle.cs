@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 /**
@@ -22,34 +23,44 @@ public class Puzzle : MonoBehaviour
 
     public Vector3[,] positionsInCanvas;
 
-
     private Ficha emptyFicha;
+    private GameObject lienzo;
 
-    public float height;
-    public float width;
-    public float spaceX;
-    public float spaceY;
-    public float zeroX;
-    public float zeroY;
-    private Vector3 initFichaPos ;
+    private float height;
+    private float width;
+    public float spaceBetwFicha = 0.05f;
+   // public float spaceY;
 
+    public Vector3 lienzoDims;
+
+    private Vector3 initFichaPos;
+
+    private int tries = 0;
 
     // Use this for initialization
     void Start()
     {
 
+        sizeX = 4;
+        sizeY = 4;
 
-        sizeX = 3;
-        sizeY = 3;
+        lienzoDims = getLienzo();
 
         fichas = new Ficha[sizeX * sizeY];
 
         fichasArray = new Ficha[sizeX, sizeY];
 
         //Guardar las posiciones en 3D world
-        positionsInCanvas =  new Vector3[sizeX, sizeY];
+        positionsInCanvas = new Vector3[sizeX, sizeY];
 
-        initFichaPos = new Vector3(0.78f, 1.97f, 1.18f);
+
+        width = lienzoDims.x / sizeX;
+        height = lienzoDims.y / sizeY;
+
+
+        initFichaPos = lienzo.transform.position - new Vector3(lienzoDims.x / 2, lienzoDims.y / 2, lienzo.transform.position.z)
+                                                    + new Vector3(width / 2, height / 2, fichaPrefab.transform.position.z);
+           // fichaPrefab.transform.position;
 
         Vector3 canvasPos = initFichaPos;
         for (int s = 0; s < sizeX; s++)
@@ -58,17 +69,17 @@ public class Puzzle : MonoBehaviour
             {
                 positionsInCanvas[s, t] = canvasPos;
 
-                canvasPos.x = canvasPos.x + width + spaceX;
+                canvasPos.x = canvasPos.x + width + spaceBetwFicha;
 
             }
 
-            canvasPos.y = canvasPos.y + height + spaceY;
+            canvasPos.y = canvasPos.y + height + spaceBetwFicha;
             canvasPos.x = initFichaPos.x;
         }
 
         PopulatePuzzle();
 
-       
+
 
     }
 
@@ -76,11 +87,23 @@ public class Puzzle : MonoBehaviour
     void Update()
     {
 
+
+#if UNITY_EDITOR 
         if (Input.GetMouseButtonDown(0))
+#else
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+#endif
         {
             Camera cam = Camera.main;
+
+#if UNITY_EDITOR
             Vector3 posMouse = Input.mousePosition;
             Ray raycast = cam.ScreenPointToRay(posMouse);
+#else
+            Vector3 posTouch = Input.GetTouch(0).position;
+            Ray raycast = cam.ScreenPointToRay(posTouch);
+#endif
+
             RaycastHit raycastHit;
 
             if (Physics.Raycast(raycast, out raycastHit))
@@ -90,6 +113,7 @@ public class Puzzle : MonoBehaviour
                 {
                     objectHit.SendMessage("MoveToSpace", emptyFicha);
                 }
+                tries++;
             }
             else
             {
@@ -97,6 +121,10 @@ public class Puzzle : MonoBehaviour
             }
 
         }
+
+
+
+
     }
 
     //Genera el puzzle y asigna las variables de las fichas
@@ -107,11 +135,15 @@ public class Puzzle : MonoBehaviour
 
         int fichaImg = 1;
 
+        fichaPrefab.transform.localScale = new Vector3(lienzoDims.x/sizeX/10f, 0.2f ,  lienzoDims.y/ sizeY/10f);
+
+
         for (int i = 0; i < sizeX; i++)
         {
             for (int j = 0; j < sizeY; j++)
             {
-                GameObject go = Instantiate(fichaPrefab, positionsInCanvas[i,j], Quaternion.Euler(-90, 0, 0), this.transform) as GameObject;
+                GameObject go = Instantiate(fichaPrefab, positionsInCanvas[i, j], Quaternion.Euler(-90, 0, 0), this.transform) as GameObject;
+
 
                 newFicha = go.GetComponent<Ficha>();
                 newFicha.finalPos = new Vector2(i, j);
@@ -140,7 +172,7 @@ public class Puzzle : MonoBehaviour
                 newFicha.puzzleInfo = this;
 
                 fichaImg++;
-     
+
             }
         }
     }
@@ -168,10 +200,10 @@ public class Puzzle : MonoBehaviour
             for (int j = 0; j < sizeX; j++)
             {
 
-                int h = Random.Range(0, sizeX );
-                int v = Random.Range(0, sizeY );
+                int h = Random.Range(0, sizeX);
+                int v = Random.Range(0, sizeY);
 
-                while ( !fichasArray[i,j].isRandomed)
+                while (!fichasArray[i, j].isRandomed)
                 {
                     if (!located[h, v])
                     {
@@ -180,13 +212,13 @@ public class Puzzle : MonoBehaviour
                         fichasArray[i, j].transform.position = positionsInCanvas[h, v];
 
                         fichasArray[i, j].pos = new Vector2(h, v);
-                        fichasArray[i, j].isRandomed = true;                       
+                        fichasArray[i, j].isRandomed = true;
 
                     }
                     else
                     {
-                        h = Random.Range(0, sizeX );
-                        v = Random.Range(0, sizeY );
+                        h = Random.Range(0, sizeX);
+                        v = Random.Range(0, sizeY);
                         //vuelva al while
                     }
 
@@ -207,18 +239,24 @@ public class Puzzle : MonoBehaviour
             if (f.pos == f.finalPos)
             {
                 f.SetLocated(true);
-                Debug.Log("Yei la ficha " + f.finalPos+" esta ubicada.");
-                f.gameObject.GetComponent<Renderer>().material.SetColor("_Color", new Color(161/255,1, 148/255));
+                Debug.Log("Yei la ficha " + f.finalPos + " esta ubicada.");
+                f.gameObject.GetComponent<Renderer>().material.SetColor("_Color", new Color(161 / 255, 1, 148 / 255));
 
                 won = true;
             }
             else
             {
                 //Debug.Log("Uy todavia falta la ficha " + f.finalPos);
-                f.gameObject.GetComponent<Renderer>().material.SetColor("_Color", new Color(1,161/255,148/255));
+                f.gameObject.GetComponent<Renderer>().material.SetColor("_Color", new Color(1, 161 / 255, 148 / 255));
 
             }
         }
+    }
+
+    public void ResetCamera()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); //Load scene called Game
+
     }
 
     public bool CheckWonAfterMove()
@@ -234,10 +272,39 @@ public class Puzzle : MonoBehaviour
         }
 
         GameObject wonLabel = GameObject.FindGameObjectWithTag("Finish");
+
         wonLabel.GetComponent<Text>().enabled = true;
+        wonLabel.GetComponent<Text>().text = "¡Ganaste! \n Lo lograste en " + tries + " movimientos.";
+
         won = true;
         return true;
     }
 
+    public Vector3 getLienzo()
+    {
+
+        lienzo = transform.Find("Lienzo").gameObject;
+        Bounds bs = lienzo.GetComponent<MeshRenderer>().bounds;
+        Vector3 centerLienzo = bs.center;
+
+        Debug.Log(bs.size);
+
+        
+
+        return bs.size;
+    }
+
+    public void OnDrawGizmos()
+    {
+        GameObject lienz = transform.Find("Lienzo").gameObject;
+
+        Bounds bs = lienz.GetComponent<MeshRenderer>().bounds;
+        Vector3 c = bs.center;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(c, bs.size);
+
+        Debug.Log(bs.size);
+    }
 }
 
