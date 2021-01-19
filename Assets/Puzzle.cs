@@ -31,7 +31,7 @@ public class Puzzle : MonoBehaviour
     public float spaceBetwFicha = 0.05f;
    // public float spaceY;
 
-    public Vector3 lienzoDims;
+    private Vector3 lienzoDims; //joo xq no salia en debug? porque era public? wtf?
 
     private Vector3 initFichaPos;
 
@@ -193,7 +193,7 @@ public class Puzzle : MonoBehaviour
     {
         //Posicion por posicion para que todas queden chuleadas
         bool[,] located = new bool[sizeX, sizeY];
-        int tries = 0;
+        int randomTries = 0;
 
         for (int i = 0; i < sizeY; i++)
         {
@@ -222,13 +222,13 @@ public class Puzzle : MonoBehaviour
                         //vuelva al while
                     }
 
-                    tries++;
+                    randomTries++;
                 }
 
             }
         }
 
-        Debug.Log("puzzle desordenado despues de " + tries + " intentos.");
+        Debug.Log("puzzle desordenado despues de " + randomTries + " intentos.");
     }
 
     public void CheckWon()
@@ -304,7 +304,7 @@ public class Puzzle : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(c, bs.size);
 
-        Debug.Log(bs.size);
+        //Debug.Log(bs.size);
     }
 }
 

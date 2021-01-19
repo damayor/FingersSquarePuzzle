@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FingersSquarePuzzle", "FingersSquarePuzzle.csproj", "{7F6A19C7-CCF1-B780-B9B8-F9D08934A840}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{DC874496-8763-9800-CB6B-43E869B90B0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7F6A19C7-CCF1-B780-B9B8-F9D08934A840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F6A19C7-CCF1-B780-B9B8-F9D08934A840}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F6A19C7-CCF1-B780-B9B8-F9D08934A840}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F6A19C7-CCF1-B780-B9B8-F9D08934A840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC874496-8763-9800-CB6B-43E869B90B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC874496-8763-9800-CB6B-43E869B90B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC874496-8763-9800-CB6B-43E869B90B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC874496-8763-9800-CB6B-43E869B90B0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
