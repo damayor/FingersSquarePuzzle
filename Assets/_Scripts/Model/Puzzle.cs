@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+using Sequences.Detail;
 
 /**
  ** Damayor- Puzzle para jugarlo moviendo las fichas al espacio vacio y que queden todas ordenadas. 
  **/
 public class Puzzle : MonoBehaviour
 {
+
     public GameObject fichaPrefab;
     private bool won;
 
@@ -22,15 +23,17 @@ public class Puzzle : MonoBehaviour
     public Ficha[,] fichasArray;
 
     public Vector3[,] positionsInCanvas;
+    public float spaceBetwFicha = 0.05f;
+    // public float spaceY;
+    [SerializeField] private Sequencer startSequence = null, winSequence = null;
+
 
     private Ficha emptyFicha;
     private GameObject lienzo;
 
     private float height;
     private float width;
-    public float spaceBetwFicha = 0.05f;
-   // public float spaceY;
-
+    
     private Vector3 lienzoDims; //joo xq no salia en debug? porque era public? wtf?
 
     private Vector3 initFichaPos;
@@ -40,6 +43,7 @@ public class Puzzle : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        startSequence.StartSequence();
 
         sizeX = 4;
         sizeY = 4;
@@ -271,10 +275,14 @@ public class Puzzle : MonoBehaviour
             }
         }
 
-        GameObject wonLabel = GameObject.FindGameObjectWithTag("Finish");
+        //GameObject wonLabel = GameObject.FindGameObjectWithTag("Finish");
 
-        wonLabel.GetComponent<Text>().enabled = true;
-        wonLabel.GetComponent<Text>().text = "¡Ganaste! \n Lo lograste en " + tries + " movimientos.";
+        //wonLabel.GetComponent<Text>().enabled = true;
+        //wonLabel.GetComponent<Text>().text = "¡Ganaste! \n Lo lograste en " + tries + " movimientos.";
+
+
+        //todo enabled seqwence
+        winSequence.StartSequence();
 
         won = true;
         return true;

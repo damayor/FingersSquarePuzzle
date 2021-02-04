@@ -6,7 +6,7 @@
 [Bb]uild
 /[Bb]uilds/
 */HoloToolkit/
-[Ll]ibrary/
+/[Ll]ibrary/
 sysinfo.txt
 *.stackdump
 /Assets/AssetStoreTools*
